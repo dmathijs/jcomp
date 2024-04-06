@@ -1,285 +1,88 @@
 ﻿using System;
+using JComp.CodeAnalysis;
 
-while (true)
+namespace JComp
 {
-	var line = Console.ReadLine();
-	if (string.IsNullOrWhiteSpace(line))
+	class Program
 	{
-		return;
-	}
-
-	var parser = new Parser(line);
-	var expression = parser.Parse();
-
-	var color = Console.ForegroundColor;
-	Console.ForegroundColor = ConsoleColor.DarkGray;
-	PrettyPrint(expression);
-	Console.ForegroundColor = color;
-}
-
-static void PrettyPrint(SyntaxNode node, string indent = "", bool isLast = true)
-{
-	var marker = isLast ? "└──" : "├──";
-
-	Console.Write(indent);
-	Console.Write(marker);
-	Console.Write(node.Kind);
-
-	if (node is SyntaxToken t && t.Value != null)
-	{
-		Console.Write(" ");
-		Console.Write(t.Value);
-	}
-
-	Console.WriteLine();
-
-	indent += isLast ? "   " : "│  ";
-
-	var lastChild = node.GetChildren().LastOrDefault();
-
-	foreach (var child in node.GetChildren())
-	{
-		PrettyPrint(child, indent, child == lastChild);
-	}
-}
-
-enum SyntaxKind
-{
-	NumberToken,
-	WhitespaceToken,
-	CloseParenthesisToken,
-	OpenParenthesisToken,
-	SlashToken,
-	StarToken,
-	MinusToken,
-	PlusToken,
-	BadToken,
-	EndOfFileToken,
-	NumberExpression,
-	BinaryExpression
-}
-
-class SyntaxToken : SyntaxNode
-{
-
-	public SyntaxToken(SyntaxKind kind, int position, string? text, object? value)
-	{
-		Kind = kind;
-		Position = position;
-		Text = text;
-		Value = value;
-	}
-
-	public override SyntaxKind Kind { get; }
-	public int Position { get; }
-	public string? Text { get; }
-	public object? Value { get; }
-
-	public override IEnumerable<SyntaxNode> GetChildren()
-	{
-		return Enumerable.Empty<SyntaxNode>();
-	}
-}
-
-class Lexer
-{
-	private readonly string _text;
-	private int _position;
-
-	public Lexer(string text)
-	{
-		this._text = text;
-	}
-
-	public SyntaxToken NextToken()
-	{
-
-		// <numbers>
-		// . * / ( ) 
-		// <whitespace>
-
-		if (_position >= _text.Length)
+		static void Main(string[] args)
 		{
-			return new SyntaxToken(SyntaxKind.EndOfFileToken, _position, "\0", null);
-		}
-
-		if (char.IsDigit(Current))
-		{
-			var start = _position;
-
-			while (char.IsDigit(Current))
-				Next();
-
-			var length = _position - start;
-			var text = _text.Substring(start, length);
-			int.TryParse(text, out var value);
-			return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
-		}
-
-		if (char.IsWhiteSpace(Current))
-		{
-			var start = _position;
-
-			while (char.IsWhiteSpace(Current))
-				Next();
-
-			var length = _position - start;
-			var text = _text.Substring(start, length);
-			return new SyntaxToken(SyntaxKind.WhitespaceToken, start, text, null);
-		}
-
-		if (Current == '+')
-			return new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null);
-		else if (Current == '-')
-			return new SyntaxToken(SyntaxKind.MinusToken, _position++, "-", null);
-		else if (Current == '*')
-			return new SyntaxToken(SyntaxKind.StarToken, _position++, "*", null);
-		else if (Current == '/')
-			return new SyntaxToken(SyntaxKind.SlashToken, _position++, "/", null);
-		else if (Current == '(')
-			return new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "(", null);
-		else if (Current == ')')
-			return new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, ")", null);
-
-		return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);
-	}
-
-	private char Current
-	{
-		get
-		{
-			if (_position >= _text.Length)
+			bool showTree = false;
+			while (true)
 			{
-				return '\0';
+				var line = Console.ReadLine();
+				if (string.IsNullOrWhiteSpace(line))
+				{
+					return;
+				}
+
+				if (line == "#showTree")
+				{
+					showTree = !showTree;
+					Console.WriteLine(showTree ? "Showing parse trees." : "Not showing parse trees.");
+					continue;
+				}
+				else if (line == "#cls")
+				{
+					Console.Clear();
+					continue;
+				}
+
+				var syntaxTree = SyntaxTree.Parse(line);
+
+				var color = Console.ForegroundColor;
+				Console.ForegroundColor = ConsoleColor.DarkGray;
+				if (showTree)
+				{
+					PrettyPrint(syntaxTree.Root);
+				}
+				Console.ForegroundColor = color;
+
+				if (!syntaxTree.Diagnostics.Any())
+				{
+					var evaluator = new Evaluator(syntaxTree.Root);
+					var result = evaluator.Evaluate();
+					Console.WriteLine(result);
+				}
+				else
+				{
+					Console.ForegroundColor = ConsoleColor.Red;
+					foreach (var diagnostic in syntaxTree.Diagnostics)
+					{
+						Console.WriteLine(diagnostic);
+					}
+					Console.ForegroundColor = color;
+				}
+			}
+		}
+
+		static void PrettyPrint(SyntaxNode node, string indent = "", bool isLast = true)
+		{
+			var marker = isLast ? "└──" : "├──";
+
+			Console.Write($"{indent}{marker}{node.Kind}");
+
+			if (node is SyntaxToken t && t.Value != null)
+			{
+				Console.Write(" ");
+				Console.Write(t.Value);
 			}
 
-			return _text[_position];
-		}
+			Console.WriteLine();
 
-	}
+			indent += isLast ? "   " : "│  ";
 
-	private void Next()
-	{
-		_position++;
-	}
-}
+			var lastChild = node.GetChildren().LastOrDefault();
 
-abstract class SyntaxNode
-{
-	public abstract SyntaxKind Kind { get; }
-
-	public abstract IEnumerable<SyntaxNode> GetChildren();
-}
-
-abstract class ExpressionSyntax : SyntaxNode
-{
-}
-
-sealed class BinaryExpressionSyntax : ExpressionSyntax
-{
-	public BinaryExpressionSyntax(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
-	{
-		Left = left;
-		OperatorToken = operatorToken;
-		Right = right;
-	}
-
-	public override SyntaxKind Kind => SyntaxKind.BinaryExpression;
-	public ExpressionSyntax Left { get; }
-	public SyntaxToken OperatorToken { get; }
-	public ExpressionSyntax Right { get; }
-
-	public override IEnumerable<SyntaxNode> GetChildren()
-	{
-		yield return Left;
-		yield return OperatorToken;
-		yield return Right;
-	}
-}
-
-sealed class NumberExpressionSyntax : ExpressionSyntax
-{
-	public NumberExpressionSyntax(SyntaxToken numberToken)
-	{
-		NumberToken = numberToken;
-	}
-
-	public override SyntaxKind Kind => SyntaxKind.NumberExpression;
-	public SyntaxToken NumberToken { get; }
-
-	public override IEnumerable<SyntaxNode> GetChildren()
-	{
-		yield return NumberToken;
-	}
-}
-
-class Parser
-{
-	private readonly SyntaxToken[] _tokens;
-	private int _position;
-
-	public Parser(string text)
-	{
-		var tokens = new List<SyntaxToken>();
-		var lexer = new Lexer(text);
-
-		SyntaxToken token;
-		do
-		{
-			token = lexer.NextToken();
-
-			if (token.Kind != SyntaxKind.WhitespaceToken && token.Kind != SyntaxKind.BadToken)
+			foreach (var child in node.GetChildren())
 			{
-				tokens.Add(token);
+				PrettyPrint(child, indent, child == lastChild);
 			}
-		} while (token.Kind != SyntaxKind.EndOfFileToken);
-
-		_tokens = tokens.ToArray();
-	}
-
-	public ExpressionSyntax Parse()
-	{
-		var left = ParsePrimaryExpression();
-
-		while (Current.Kind == SyntaxKind.PlusToken || Current.Kind == SyntaxKind.MinusToken)
-		{
-			var operatorToken = NextToken();
-			var right = ParsePrimaryExpression();
-			left = new BinaryExpressionSyntax(left, operatorToken, right);
 		}
-
-		return left;
 	}
 
-	private ExpressionSyntax ParsePrimaryExpression()
-	{
-		var numberToken = Match(SyntaxKind.NumberToken);
-		return new NumberExpressionSyntax(numberToken);
-	}
 
-	private SyntaxToken Match(SyntaxKind kind)
-	{
-		if (Current.Kind == kind)
-			return NextToken();
 
-		return new SyntaxToken(kind, Current.Position, null, null);
-	}
-
-	private SyntaxToken NextToken()
-	{
-		var current = Current;
-		_position++;
-		return current;
-	}
-
-	private SyntaxToken Peek(int offset)
-	{
-		var index = _position + offset;
-		if (index >= _tokens.Length)
-			return _tokens[_tokens.Length - 1];
-
-		return _tokens[index];
-	}
-
-	private SyntaxToken Current => Peek(0);
 }
+
+
