@@ -1,6 +1,6 @@
 namespace JComp.CodeAnalysis
 {
-	class Parser
+	internal class Parser
 	{
 		private readonly SyntaxToken[] _tokens;
 		private int _position;

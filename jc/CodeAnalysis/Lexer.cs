@@ -1,6 +1,6 @@
 namespace JComp.CodeAnalysis
 {
-	class Lexer
+	internal class Lexer
 	{
 		private readonly string _text;
 		private int _position;

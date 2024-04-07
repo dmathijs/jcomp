@@ -3,11 +3,11 @@ using JComp.CodeAnalysis;
 
 namespace JComp
 {
-	class Program
+	internal static class Program
 	{
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
-			bool showTree = false;
+			var showTree = false;
 			while (true)
 			{
 				var line = Console.ReadLine();
@@ -30,13 +30,12 @@ namespace JComp
 
 				var syntaxTree = SyntaxTree.Parse(line);
 
-				var color = Console.ForegroundColor;
 				Console.ForegroundColor = ConsoleColor.DarkGray;
 				if (showTree)
 				{
 					PrettyPrint(syntaxTree.Root);
 				}
-				Console.ForegroundColor = color;
+				Console.ResetColor();
 
 				if (!syntaxTree.Diagnostics.Any())
 				{
@@ -51,7 +50,7 @@ namespace JComp
 					{
 						Console.WriteLine(diagnostic);
 					}
-					Console.ForegroundColor = color;
+					Console.ResetColor();
 				}
 			}
 		}
