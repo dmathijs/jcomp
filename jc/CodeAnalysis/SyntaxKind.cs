@@ -17,6 +17,7 @@ namespace JComp.CodeAnalysis
 		// Expressions
 		NumberExpression,
 		BinaryExpression,
-		ParenthesizedExpression
+		ParenthesizedExpression,
+		UnaryExpression
 	}
 }
