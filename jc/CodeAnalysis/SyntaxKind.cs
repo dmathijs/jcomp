@@ -2,16 +2,19 @@ namespace JComp.CodeAnalysis
 {
 	public enum SyntaxKind
 	{
-		NumberToken,
+		// Tokens
+		BadToken,
+		EndOfFileToken,
 		WhitespaceToken,
+		NumberToken,
 		CloseParenthesisToken,
 		OpenParenthesisToken,
 		SlashToken,
 		StarToken,
 		MinusToken,
 		PlusToken,
-		BadToken,
-		EndOfFileToken,
+
+		// Expressions
 		NumberExpression,
 		BinaryExpression,
 		ParenthesizedExpression

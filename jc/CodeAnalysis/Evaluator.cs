@@ -16,11 +16,11 @@ namespace JComp.CodeAnalysis
 
 		private int EvaluateExpression(object node)
 		{
-			if (node is NumberExpressionSyntax n)
+			if (node is LiteralExpressionSyntax n)
 			{
-				if (n.NumberToken.Value is int)
+				if (n.LiteralToken.Value is int)
 				{
-					return (int)n.NumberToken.Value;
+					return (int)n.LiteralToken.Value;
 				}
 			}
 
