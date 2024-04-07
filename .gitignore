@@ -1,0 +1,4 @@
+/jc/bin/*
+/jc/obj/*
+.vscode/*
+.mono/*
