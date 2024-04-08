@@ -1,5 +1,6 @@
 ﻿using System;
 using JComp.CodeAnalysis;
+using JComp.CodeAnalysis.Syntax;
 
 namespace JComp
 {
