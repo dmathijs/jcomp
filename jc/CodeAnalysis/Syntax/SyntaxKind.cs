@@ -13,6 +13,11 @@ namespace JComp.CodeAnalysis.Syntax
 		StarToken,
 		MinusToken,
 		PlusToken,
+		IdentifierToken,
+
+		// Keywords
+		FalseKeyword,
+		TrueKeyword,
 
 		// Expressions
 		LiteralExpression,
