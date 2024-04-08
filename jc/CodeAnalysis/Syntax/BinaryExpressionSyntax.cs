@@ -1,4 +1,4 @@
-namespace JComp.CodeAnalysis
+namespace JComp.CodeAnalysis.Syntax
 {
 	public sealed class BinaryExpressionSyntax : ExpressionSyntax
 	{

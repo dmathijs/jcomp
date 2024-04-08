@@ -15,9 +15,9 @@ namespace JComp.CodeAnalysis.Syntax
 		PlusToken,
 
 		// Expressions
-		NumberExpression,
+		LiteralExpression,
 		BinaryExpression,
 		ParenthesizedExpression,
-		UnaryExpression
+		UnaryExpression,
 	}
 }

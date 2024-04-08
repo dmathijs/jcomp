@@ -1,5 +1,6 @@
 ﻿using System;
 using JComp.CodeAnalysis;
+using JComp.CodeAnalysis.Binding;
 using JComp.CodeAnalysis.Syntax;
 
 namespace JComp
@@ -30,6 +31,10 @@ namespace JComp
 				}
 
 				var syntaxTree = SyntaxTree.Parse(line);
+				var binder = new Binder();
+				var boundExpression = binder.BindExpression(syntaxTree.Root);
+
+				IReadOnlyList<string> diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
 
 				Console.ForegroundColor = ConsoleColor.DarkGray;
 				if (showTree)
@@ -38,9 +43,9 @@ namespace JComp
 				}
 				Console.ResetColor();
 
-				if (!syntaxTree.Diagnostics.Any())
+				if (!diagnostics.Any())
 				{
-					var evaluator = new Evaluator(syntaxTree.Root);
+					var evaluator = new Evaluator(boundExpression);
 					var result = evaluator.Evaluate();
 					Console.WriteLine(result);
 				}
