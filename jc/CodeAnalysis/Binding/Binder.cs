@@ -41,24 +41,32 @@ namespace JComp.CodeAnalysis.Binding
 
 		private BoundBinaryOperatorKind? BindBinaryOperatorKind(SyntaxKind kind, Type leftType, Type rightType)
 		{
-			if (leftType != typeof(int) || rightType != typeof(int))
+			if (leftType == typeof(int) && rightType == typeof(int))
 			{
-				return null;
+				switch (kind)
+				{
+					case SyntaxKind.PlusToken:
+						return BoundBinaryOperatorKind.Addition;
+					case SyntaxKind.MinusToken:
+						return BoundBinaryOperatorKind.Subtraction;
+					case SyntaxKind.StarToken:
+						return BoundBinaryOperatorKind.Multiplication;
+					case SyntaxKind.SlashToken:
+						return BoundBinaryOperatorKind.Division;
+				}
 			}
+			else if (leftType == typeof(bool) && rightType == typeof(bool))
+			{
+				switch (kind)
+				{
+					case SyntaxKind.AmpersandToken:
+						return BoundBinaryOperatorKind.LogicalAnd;
+					case SyntaxKind.PipeToken:
+						return BoundBinaryOperatorKind.LogialOr;
+				}
+			}
+			return null;
 
-			switch (kind)
-			{
-				case SyntaxKind.PlusToken:
-					return BoundBinaryOperatorKind.Addition;
-				case SyntaxKind.MinusToken:
-					return BoundBinaryOperatorKind.Subtraction;
-				case SyntaxKind.StarToken:
-					return BoundBinaryOperatorKind.Multiplication;
-				case SyntaxKind.SlashToken:
-					return BoundBinaryOperatorKind.Division;
-				default:
-					throw new Exception($"Unexpected binary operator {kind}");
-			}
 		}
 
 		private BoundExpression BindUnaryExpression(UnaryExpressionSyntax syntax)
@@ -77,20 +85,26 @@ namespace JComp.CodeAnalysis.Binding
 
 		private BoundUnaryOperatorKind? BindUnaryOperatorKind(SyntaxKind kind, Type operandType)
 		{
-			if (operandType != typeof(int))
+			if (operandType == typeof(int))
 			{
-				return null;
+				switch (kind)
+				{
+					case SyntaxKind.PlusToken:
+						return BoundUnaryOperatorKind.Identity;
+					case SyntaxKind.MinusToken:
+						return BoundUnaryOperatorKind.Negation;
+				}
+			}
+			else if (operandType == typeof(bool))
+			{
+				switch (kind)
+				{
+					case SyntaxKind.BangToken:
+						return BoundUnaryOperatorKind.LogicalNegation;
+				}
 			}
 
-			switch (kind)
-			{
-				case SyntaxKind.PlusToken:
-					return BoundUnaryOperatorKind.Identity;
-				case SyntaxKind.MinusToken:
-					return BoundUnaryOperatorKind.Negation;
-				default:
-					throw new Exception($"Unexpected unary operator {kind}");
-			}
+			return null;
 		}
 
 		private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)

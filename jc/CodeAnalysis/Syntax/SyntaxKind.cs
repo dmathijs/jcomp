@@ -14,6 +14,9 @@ namespace JComp.CodeAnalysis.Syntax
 		MinusToken,
 		PlusToken,
 		IdentifierToken,
+		BangToken,
+		AmpersandToken,
+		PipeToken,
 
 		// Keywords
 		FalseKeyword,

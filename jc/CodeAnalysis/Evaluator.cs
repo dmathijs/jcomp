@@ -26,14 +26,16 @@ namespace JComp.CodeAnalysis
 
 			if (node is BoundUnaryExpression u)
 			{
-				var operand = (int)EvaluateExpression(u.Operand);
+				var operand = EvaluateExpression(u.Operand);
 
 				switch (u.OperatorKind)
 				{
 					case BoundUnaryOperatorKind.Identity:
-						return operand;
+						return (int)operand;
 					case BoundUnaryOperatorKind.Negation:
-						return -operand;
+						return -(int)operand;
+					case BoundUnaryOperatorKind.LogicalNegation:
+						return !(bool)operand;
 					default:
 						throw new Exception($"Unexpected unary operator {u.OperatorKind}");
 				}
@@ -41,17 +43,21 @@ namespace JComp.CodeAnalysis
 
 			if (node is BoundBinaryExpression b)
 			{
-				var left = (int)EvaluateExpression(b.Left);
-				var right = (int)EvaluateExpression(b.Right);
+				var left = EvaluateExpression(b.Left);
+				var right = EvaluateExpression(b.Right);
 
 				if (b.OperatorKind == BoundBinaryOperatorKind.Addition)
-					return left + right;
+					return (int)left + (int)right;
 				else if (b.OperatorKind == BoundBinaryOperatorKind.Subtraction)
-					return left - right;
+					return (int)left - (int)right;
 				else if (b.OperatorKind == BoundBinaryOperatorKind.Multiplication)
-					return left * right;
+					return (int)left * (int)right;
 				else if (b.OperatorKind == BoundBinaryOperatorKind.Division)
-					return left / right;
+					return (int)left / (int)right;
+				else if (b.OperatorKind == BoundBinaryOperatorKind.LogialOr)
+					return (bool)left || (bool)right;
+				else if (b.OperatorKind == BoundBinaryOperatorKind.LogicalAnd)
+					return (bool)left && (bool)right;
 				else
 					throw new Exception($"Unexpected binary operator {b.OperatorKind}");
 			}

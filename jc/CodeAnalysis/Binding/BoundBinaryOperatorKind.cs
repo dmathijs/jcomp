@@ -6,5 +6,9 @@ namespace JComp.CodeAnalysis.Binding
 		Subtraction,
 		Multiplication,
 		Division,
+		BitwiseAnd,
+		BitwiseOr,
+		LogicalAnd,
+		LogialOr,
 	}
 }
