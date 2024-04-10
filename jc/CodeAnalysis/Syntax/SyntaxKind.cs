@@ -17,6 +17,8 @@ namespace JComp.CodeAnalysis.Syntax
 		BangToken,
 		AmpersandToken,
 		PipeToken,
+		AmpersandAmpersandToken,
+		PipePipeToken,
 
 		// Keywords
 		FalseKeyword,

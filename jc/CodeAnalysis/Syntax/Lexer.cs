@@ -80,11 +80,11 @@ namespace JComp.CodeAnalysis.Syntax
 					return new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null);
 				case '&':
 					if (LookAhead == '&')
-						return new SyntaxToken(SyntaxKind.AmpersandToken, _position += 2, "&&", null);
+						return new SyntaxToken(SyntaxKind.AmpersandAmpersandToken, _position += 2, "&&", null);
 					break;
 				case '|':
 					if (LookAhead == '|')
-						return new SyntaxToken(SyntaxKind.PipeToken, _position += 2, "||", null);
+						return new SyntaxToken(SyntaxKind.PipePipeToken, _position += 2, "||", null);
 					break;
 			}
 

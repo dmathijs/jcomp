@@ -9,6 +9,6 @@ namespace JComp.CodeAnalysis.Binding
 		BitwiseAnd,
 		BitwiseOr,
 		LogicalAnd,
-		LogialOr,
+		LogicalOr,
 	}
 }
