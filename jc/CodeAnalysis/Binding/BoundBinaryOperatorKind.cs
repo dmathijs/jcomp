@@ -10,5 +10,7 @@ namespace JComp.CodeAnalysis.Binding
 		BitwiseOr,
 		LogicalAnd,
 		LogicalOr,
+		Equals,
+		NotEquals
 	}
 }

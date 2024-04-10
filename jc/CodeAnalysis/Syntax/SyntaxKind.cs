@@ -29,5 +29,7 @@ namespace JComp.CodeAnalysis.Syntax
 		BinaryExpression,
 		ParenthesizedExpression,
 		UnaryExpression,
+		EqualsEqualsToken,
+		BangEqualsToken,
 	}
 }
