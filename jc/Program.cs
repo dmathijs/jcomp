@@ -1,13 +1,15 @@
 ﻿using System;
 using JComp.CodeAnalysis;
+using JComp.CodeAnalysis.Binding;
+using JComp.CodeAnalysis.Syntax;
 
 namespace JComp
 {
-	class Program
+	internal static class Program
 	{
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
-			bool showTree = false;
+			var showTree = false;
 			while (true)
 			{
 				var line = Console.ReadLine();
@@ -29,29 +31,32 @@ namespace JComp
 				}
 
 				var syntaxTree = SyntaxTree.Parse(line);
+				var binder = new Binder();
+				var boundExpression = binder.BindExpression(syntaxTree.Root);
 
-				var color = Console.ForegroundColor;
+				IReadOnlyList<string> diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
+
 				Console.ForegroundColor = ConsoleColor.DarkGray;
 				if (showTree)
 				{
 					PrettyPrint(syntaxTree.Root);
 				}
-				Console.ForegroundColor = color;
+				Console.ResetColor();
 
-				if (!syntaxTree.Diagnostics.Any())
+				if (!diagnostics.Any())
 				{
-					var evaluator = new Evaluator(syntaxTree.Root);
+					var evaluator = new Evaluator(boundExpression);
 					var result = evaluator.Evaluate();
 					Console.WriteLine(result);
 				}
 				else
 				{
 					Console.ForegroundColor = ConsoleColor.Red;
-					foreach (var diagnostic in syntaxTree.Diagnostics)
+					foreach (var diagnostic in diagnostics)
 					{
 						Console.WriteLine(diagnostic);
 					}
-					Console.ForegroundColor = color;
+					Console.ResetColor();
 				}
 			}
 		}

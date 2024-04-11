@@ -1,6 +1,6 @@
-namespace JComp.CodeAnalysis
+namespace JComp.CodeAnalysis.Syntax
 {
-	abstract class SyntaxNode
+	public abstract class SyntaxNode
 	{
 		public abstract SyntaxKind Kind { get; }
 
