@@ -48,12 +48,26 @@ namespace JComp
 				}
 				else
 				{
-					Console.ForegroundColor = ConsoleColor.Red;
 					foreach (var diagnostic in diagnostics)
 					{
+						Console.ForegroundColor = ConsoleColor.Red;
 						Console.WriteLine(diagnostic);
+						Console.ResetColor();
+
+						var prefix = line[..diagnostic.Span.Start];
+						var error = line.Substring(diagnostic.Span.Start, diagnostic.Span.Length);
+						var suffix = line.Substring(diagnostic.Span.End);
+
+						Console.Write("    ");
+						Console.Write(prefix);
+
+						Console.ForegroundColor = ConsoleColor.Red;
+						Console.Write(error);
+						Console.ResetColor();
+
+						Console.Write(suffix);
+						Console.WriteLine();
 					}
-					Console.ResetColor();
 				}
 			}
 		}
@@ -82,9 +96,6 @@ namespace JComp
 			}
 		}
 	}
-
-
-
 }
 
 
