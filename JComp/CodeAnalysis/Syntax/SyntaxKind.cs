@@ -19,6 +19,9 @@ namespace JComp.CodeAnalysis.Syntax
 		PipeToken,
 		AmpersandAmpersandToken,
 		PipePipeToken,
+		EqualsEqualsToken,
+		BangEqualsToken,
+		EqualsToken,
 
 		// Keywords
 		FalseKeyword,
@@ -29,7 +32,7 @@ namespace JComp.CodeAnalysis.Syntax
 		BinaryExpression,
 		ParenthesizedExpression,
 		UnaryExpression,
-		EqualsEqualsToken,
-		BangEqualsToken,
+		NameExpression,
+		AssignmentExpression,
 	}
 }
