@@ -48,7 +48,7 @@ namespace JComp.CodeAnalysis.Syntax
 				var identifierToken = NextToken();
 				var operatorToken = NextToken();
 				var right = ParseAssignmentExpression();
-				return new AssignmentNameExpressionSyntax(identifierToken, operatorToken, right);
+				return new AssignmentExpressionSyntax(identifierToken, operatorToken, right);
 			}
 
 			return ParseBinaryExpression();

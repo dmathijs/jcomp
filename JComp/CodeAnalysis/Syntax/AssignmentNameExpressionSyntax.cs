@@ -1,8 +1,8 @@
 namespace JComp.CodeAnalysis.Syntax
 {
-	public sealed class AssignmentNameExpressionSyntax : ExpressionSyntax
+	public sealed class AssignmentExpressionSyntax : ExpressionSyntax
 	{
-		public AssignmentNameExpressionSyntax(SyntaxToken identifierToken, SyntaxToken equalsToken, ExpressionSyntax expression)
+		public AssignmentExpressionSyntax(SyntaxToken identifierToken, SyntaxToken equalsToken, ExpressionSyntax expression)
 		{
 			IdentifierToken = identifierToken;
 			EqualsToken = equalsToken;

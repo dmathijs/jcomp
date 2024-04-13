@@ -9,6 +9,8 @@ namespace JComp
 		private static void Main(string[] args)
 		{
 			var showTree = false;
+			var variables = new Dictionary<VariableSymbol, object>();
+
 			while (true)
 			{
 				var line = Console.ReadLine();
@@ -31,7 +33,7 @@ namespace JComp
 
 				var syntaxTree = SyntaxTree.Parse(line);
 				var compilation = new Compilation(syntaxTree);
-				var result = compilation.Evaluate();
+				var result = compilation.Evaluate(variables);
 
 				IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
 

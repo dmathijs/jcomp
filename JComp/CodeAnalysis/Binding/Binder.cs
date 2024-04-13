@@ -2,10 +2,15 @@ using JComp.CodeAnalysis.Syntax;
 
 namespace JComp.CodeAnalysis.Binding
 {
-
 	internal sealed class Binder
 	{
 		private readonly DiagnosticBag _diagnostics = new DiagnosticBag();
+		private readonly Dictionary<VariableSymbol, object?> _variables;
+
+		public Binder(Dictionary<VariableSymbol, object?> variables)
+		{
+			this._variables = variables;
+		}
 
 		public DiagnosticBag Diagnostics => _diagnostics;
 
@@ -20,7 +25,7 @@ namespace JComp.CodeAnalysis.Binding
 				case SyntaxKind.NameExpression:
 					return BindNameExpression((NameExpressionSyntax)syntax);
 				case SyntaxKind.AssignmentExpression:
-					return BindAssignmentExpression((AssignmentNameExpressionSyntax)syntax);
+					return BindAssignmentExpression((AssignmentExpressionSyntax)syntax);
 				case SyntaxKind.UnaryExpression:
 					return BindUnaryExpression((UnaryExpressionSyntax)syntax);
 				case SyntaxKind.BinaryExpression:
@@ -41,15 +46,38 @@ namespace JComp.CodeAnalysis.Binding
 			return new BoundLiteralExpression(value);
 		}
 
-		private BoundExpression BindAssignmentExpression(AssignmentNameExpressionSyntax syntax)
+		private BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax syntax)
 		{
-			throw new NotImplementedException();
-		}
+			var name = syntax.IdentifierToken.Text ?? string.Empty;
+			var boundExpression = BindExpression(syntax.Expression);
 
+			var defaultValue = boundExpression.Type == typeof(int) ? (object)0 : boundExpression.Type == typeof(bool) ? false : null;
+
+			var existingVariable = _variables.Keys.FirstOrDefault(v => v.Name == name);
+			if (existingVariable != null)
+			{
+				_variables.Remove(existingVariable);
+			}
+
+			var variable = new VariableSymbol(name, false, boundExpression.Type);
+			_variables[variable] = null;
+
+			return new BoundAssignmentExpression(variable, boundExpression);
+		}
 
 		private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
 		{
-			throw new NotImplementedException();
+			var name = syntax.IdentifierToken.Text ?? string.Empty;
+
+			var variable = _variables.Keys.FirstOrDefault(v => v.Name == name);
+
+			if (variable == null)
+			{
+				_diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
+				return new BoundLiteralExpression(0);
+			}
+
+			return new BoundVariableExpression(variable);
 		}
 
 		private BoundExpression BindBinaryExpression(BinaryExpressionSyntax syntax)
