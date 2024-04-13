@@ -9,7 +9,7 @@ namespace JComp
 		private static void Main(string[] args)
 		{
 			var showTree = false;
-			var variables = new Dictionary<VariableSymbol, object>();
+			var variables = new Dictionary<VariableSymbol, object?>();
 
 			while (true)
 			{
