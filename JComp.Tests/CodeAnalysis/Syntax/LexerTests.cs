@@ -2,7 +2,7 @@ using JComp.CodeAnalysis.Syntax;
 
 namespace JComp.Tests.CodeAnalysis.Syntax
 {
-	public class LexerTest
+	public class LexerTests
 	{
 		[Theory]
 		[MemberData(nameof(GetTokensData))]
