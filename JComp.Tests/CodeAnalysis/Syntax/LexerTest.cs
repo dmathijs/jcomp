@@ -27,10 +27,25 @@ namespace JComp.Tests.CodeAnalysis.Syntax
 			Assert.Equal(t2Text, tokens[1].Text);
 		}
 
+		[Theory]
+		[MemberData(nameof(GetTokenPairsWithSeparatorData))]
+		public void Lexer_Lexes_TokenPairsWithSeparator(SyntaxKind t1Kind, string t1Text, SyntaxKind separatorKind, string separatorText, SyntaxKind t2Kind, string t2Text)
+		{
+			var text = t1Text + separatorText + t2Text;
+			var tokens = SyntaxTree.ParseTokens(text).ToArray();
+			Assert.Equal(3, tokens.Length);
+			Assert.Equal(t1Kind, tokens[0].Kind);
+			Assert.Equal(t1Text, tokens[0].Text);
+			Assert.Equal(separatorKind, tokens[1].Kind);
+			Assert.Equal(separatorText, tokens[1].Text);
+			Assert.Equal(t2Kind, tokens[2].Kind);
+			Assert.Equal(t2Text, tokens[2].Text);
+		}
+
 		public static IEnumerable<object[]> GetTokensData()
 		{
 			return GetTokens()
-				.Select(t => new object[] { t.tKind, t.tText });
+				.Select(t => new object[] { t.kind, t.text });
 		}
 
 		public static IEnumerable<object[]> GetTokenPairsData()
@@ -39,7 +54,13 @@ namespace JComp.Tests.CodeAnalysis.Syntax
 				.Select(t => new object[] { t.t1Kind, t.t1Text, t.t2Kind, t.t2Text });
 		}
 
-		private static IEnumerable<(SyntaxKind tKind, string tText)> GetTokens()
+		public static IEnumerable<object[]> GetTokenPairsWithSeparatorData()
+		{
+			return GetTokenPairsWithSeparator()
+				.Select(t => new object[] { t.t1Kind, t.t1Text, t.separatorKind, t.separatorText, t.t2Kind, t.t2Text });
+		}
+
+		private static IEnumerable<(SyntaxKind kind, string text)> GetTokens()
 		{
 			return new[]
 			{
@@ -57,7 +78,21 @@ namespace JComp.Tests.CodeAnalysis.Syntax
 				(SyntaxKind.CloseParenthesisToken, ")"),
 				(SyntaxKind.FalseKeyword, "false"),
 				(SyntaxKind.TrueKeyword, "true"),
-				(SyntaxKind.IdentifierToken, "a")
+				(SyntaxKind.IdentifierToken, "a"),
+				(SyntaxKind.NumberToken, "1")
+			};
+		}
+
+		private static IEnumerable<(SyntaxKind kind, string text)> GetSeparators()
+		{
+			return new[]
+			{
+				(SyntaxKind.WhitespaceToken, " "),
+				(SyntaxKind.WhitespaceToken, "  "),
+				(SyntaxKind.WhitespaceToken, "\r"),
+				(SyntaxKind.WhitespaceToken, "\n"),
+				(SyntaxKind.WhitespaceToken, "\r\n"),
+				(SyntaxKind.WhitespaceToken, "\t")
 			};
 		}
 
@@ -123,6 +158,9 @@ namespace JComp.Tests.CodeAnalysis.Syntax
 			if (t1Kind == SyntaxKind.EqualsToken && t2Kind == SyntaxKind.EqualsToken)
 				return true;
 
+			if (t1Kind == SyntaxKind.NumberToken && t2Kind == SyntaxKind.NumberToken)
+				return true;
+
 			return false;
 		}
 
@@ -132,8 +170,23 @@ namespace JComp.Tests.CodeAnalysis.Syntax
 			{
 				foreach (var t2 in GetTokens())
 				{
-					if (!RequiresSeparator(t1.tKind, t2.tKind))
-						yield return (t1.tKind, t1.tText, t2.tKind, t2.tText);
+					if (!RequiresSeparator(t1.kind, t2.kind))
+						yield return (t1.kind, t1.text, t2.kind, t2.text);
+				}
+			}
+		}
+
+		private static IEnumerable<(SyntaxKind t1Kind, string t1Text, SyntaxKind separatorKind, string separatorText, SyntaxKind t2Kind, string t2Text)> GetTokenPairsWithSeparator()
+		{
+			foreach (var t1 in GetTokens())
+			{
+				foreach (var t2 in GetTokens())
+				{
+					if (RequiresSeparator(t1.kind, t2.kind))
+					{
+						foreach (var separator in GetSeparators())
+							yield return (t1.kind, t1.text, separator.kind, separator.text, t2.kind, t2.text);
+					}
 				}
 			}
 		}
