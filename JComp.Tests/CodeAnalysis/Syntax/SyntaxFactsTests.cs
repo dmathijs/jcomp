@@ -21,5 +21,24 @@ namespace JComp.Tests.CodeAnalysis.Syntax
 				Assert.Equal(text, token.Text);
 			}
 		}
+
+		[Fact]
+		public void SyntaxFact_GetBinaryOperator_RoundTrips()
+		{
+			foreach (SyntaxKind kind in Enum.GetValues(typeof(SyntaxKind)))
+			{
+				if (kind.ToString().EndsWith("Keyword") ||
+					kind.ToString().EndsWith("Token") ||
+					kind.ToString().EndsWith("Literal"))
+					continue;
+
+				var text = SyntaxFacts.GetText(kind);
+				if (text == null)
+					continue;
+
+				var parsedKind = SyntaxFacts.GetKeywordKind(text);
+				Assert.Equal(kind, parsedKind);
+			}
+		}
 	}
 }
