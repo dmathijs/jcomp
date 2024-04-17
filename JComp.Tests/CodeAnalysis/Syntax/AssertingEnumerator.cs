@@ -66,7 +66,7 @@ namespace JComp.Tests.CodeAnalysis.Syntax
 		public void Dispose()
 		{
 			if (!_hasErrors)
-				Assert.False(_enumerator.MoveNext());
+				Assert.False(_enumerator.MoveNext(), $"Expected enumerator to be empty, got {_enumerator.Current} instead.");
 			_enumerator.Dispose();
 		}
 	}
